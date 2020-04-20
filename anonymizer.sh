@@ -89,10 +89,73 @@ else
 fi
 
 if [[ -z "$ANONYMIZE" ]]; then
-  echo "  Do you want me to anonymize your database (Y/n)?"; read ANONYMIZE
+  echo "  Do you want me to drop all customers data from your database (1), only anonymize your database (2), or do nothing (0)?"; read ANONYMIZE
 fi
-if [[ "$ANONYMIZE" == "y" || "$ANONYMIZE" == "Y" || -z "$ANONYMIZE" ]]; then
-  ANONYMIZE="y"
+if [[ "$ANONYMIZE" == "1" ]]; then
+  $DBCALL "SET FOREIGN_KEY_CHECKS=0;
+    TRUNCATE customer_entity;
+    TRUNCATE customer_entity_datetime;
+    TRUNCATE customer_entity_decimal;
+    TRUNCATE customer_entity_int;
+    TRUNCATE customer_entity_text;
+    TRUNCATE customer_entity_varchar;
+    TRUNCATE customer_address_entity;
+    TRUNCATE customer_address_entity_datetime;
+    TRUNCATE customer_address_entity_decimal;
+    TRUNCATE customer_address_entity_int;
+    TRUNCATE customer_address_entity_text;
+    TRUNCATE customer_address_entity_varchar;
+    TRUNCATE catalog_compare_item;
+    TRUNCATE newsletter_queue;
+    TRUNCATE newsletter_queue_link;
+    TRUNCATE newsletter_subscriber;
+    TRUNCATE newsletter_problem;
+    TRUNCATE newsletter_queue_store_link;
+    TRUNCATE catalogsearch_query;
+    TRUNCATE catalogsearch_fulltext;
+    TRUNCATE catalogsearch_result;
+    TRUNCATE poll;
+    TRUNCATE poll_answer;
+    TRUNCATE poll_store;
+    TRUNCATE poll_vote;
+    TRUNCATE wishlist;
+    TRUNCATE wishlist_item;
+    TRUNCATE sales_billing_agreement;
+    TRUNCATE sales_billing_agreement_order;
+    TRUNCATE sales_flat_order;
+    TRUNCATE sales_flat_order_address;
+    TRUNCATE sales_flat_order_grid;
+    TRUNCATE sales_flat_order_item;
+    TRUNCATE sales_flat_order_payment;
+    TRUNCATE sales_flat_order_status_history;
+    TRUNCATE sales_flat_quote;
+    TRUNCATE sales_flat_quote_address;
+    TRUNCATE sales_flat_quote_address_item;
+    TRUNCATE sales_flat_quote_item;
+    TRUNCATE sales_flat_quote_item_option;
+    TRUNCATE sales_flat_quote_payment;
+    TRUNCATE sales_flat_quote_shipping_rate;
+    TRUNCATE sales_flat_shipment;
+    TRUNCATE sales_flat_shipment_comment;
+    TRUNCATE sales_flat_shipment_grid;
+    TRUNCATE sales_flat_shipment_item;
+    TRUNCATE sales_flat_shipment_track;
+    TRUNCATE sales_order_tax;
+    TRUNCATE sales_flat_invoice;
+    TRUNCATE sales_flat_invoice_comment;
+    TRUNCATE sales_flat_invoice_grid;
+    TRUNCATE sales_flat_invoice_item;
+    TRUNCATE sales_flat_creditmemo;
+    TRUNCATE sales_flat_creditmemo_comment;
+    TRUNCATE sales_flat_creditmemo_grid;
+    TRUNCATE sales_flat_creditmemo_item;
+    TRUNCATE sales_payment_transaction;
+    TRUNCATE sales_recurring_profile;
+    TRUNCATE sales_recurring_profile_order;
+    TRUNCATE downloadable_link_purchased;
+    TRUNCATE downloadable_link_purchased_item;
+    SET FOREIGN_KEY_CHECKS=1;"
+elif [[ "$ANONYMIZE" == "2" ]]; then
   # customer address
   ENTITY_TYPE="customer_address"
   ATTR_CODE="firstname"
@@ -159,8 +222,6 @@ if [[ "$ANONYMIZE" == "y" || "$ANONYMIZE" == "Y" || -z "$ANONYMIZE" ]]; then
 
   # newsletter
   $DBCALL "UPDATE newsletter_subscriber SET subscriber_email=CONCAT('dev_newsletter_',subscriber_id,'@trash-mail.com') WHERE subscriber_email NOT IN ($KEEP_EMAIL)"
-else
-  ANONYMIZE="n"
 fi
 
 if [[ -z "$TRUNCATE_LOGS" ]]; then

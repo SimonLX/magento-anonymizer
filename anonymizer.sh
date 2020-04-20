@@ -230,11 +230,19 @@ fi
 if [[  "$TRUNCATE_LOGS" == "y" || "$TRUNCATE_LOGS" == "Y" || -z "$TRUNCATE_LOGS" ]]; then
   TRUNCATE_LOGS="y"
   # truncate unrequired tables
+  $DBCALL "TRUNCATE log_customer"
+  $DBCALL "TRUNCATE log_quote"
+  $DBCALL "TRUNCATE log_summary"
+  $DBCALL "TRUNCATE log_summary_type"
   $DBCALL "TRUNCATE log_url"
   $DBCALL "TRUNCATE log_url_info"
   $DBCALL "TRUNCATE log_visitor"
   $DBCALL "TRUNCATE log_visitor_info"
+  $DBCALL "TRUNCATE log_visitor_online"
   $DBCALL "TRUNCATE report_event"
+  $DBCALL "TRUNCATE report_viewed_product_index"
+  $DBCALL "TRUNCATE report_compared_product_index"
+  $DBCALL "TRUNCATE catalog_compare_item"
 else
   TRUNCATE_LOGS="n"
 fi

@@ -254,20 +254,20 @@ if [[ -z "$DEMO_NOTICE" ]]; then
 fi
 if [[  "$DEMO_NOTICE" == "y" || "$DEMO_NOTICE" == "Y" || -z "$DEMO_NOTICE" ]]; then
   DEMO_NOTICE="y"
-  $DBCALL "UPDATE core_config_data SET value='1' WHERE path='design/head/demonotice'"
+  $DBCALL "INSERT INTO core_config_data (path, value) VALUES ('design/head/demonotice', '1') ON DUPLICATE KEY UPDATE value = '1'"
 else
   DEMO_NOTICE="n"
 fi
-$DBCALL "UPDATE core_config_data SET value='0' WHERE path='dev/css/merge_css_files' OR path='dev/js/merge_files'"
-$DBCALL "UPDATE core_config_data SET value='0' WHERE path='google/analytics/active'"
-$DBCALL "UPDATE core_config_data SET value='NOINDEX,NOFOLLOW' WHERE path='design/head/default_robots'"
+$DBCALL "INSERT INTO core_config_data (path, value) VALUES ('dev/css/merge_css_files', '0') ON DUPLICATE KEY UPDATE value = '0'"
+$DBCALL "INSERT INTO core_config_data (path, value) VALUES ('dev/js/merge_files', '0') ON DUPLICATE KEY UPDATE value = '0'"
+$DBCALL "INSERT INTO core_config_data (path, value) VALUES ('google/analytics/active', '0') ON DUPLICATE KEY UPDATE value = '0'"
+$DBCALL "INSERT INTO core_config_data (path, value) VALUES ('design/head/default_robots', 'NOINDEX,NOFOLLOW') ON DUPLICATE KEY UPDATE value = 'NOINDEX,NOFOLLOW'"
 
 # set mail receivers
-$DBCALL "UPDATE core_config_data SET value='contact-magento-dev@trash-mail.com' WHERE path='trans_email/ident_general/email'"
-$DBCALL "UPDATE core_config_data SET value='contact-magento-dev@trash-mail.com' WHERE path='trans_email/ident_sales/email'"
-$DBCALL "UPDATE core_config_data SET value='contact-magento-dev@trash-mail.com' WHERE path='trans_email/ident_support/email'"
-$DBCALL "UPDATE core_config_data SET value='contact-magento-dev@trash-mail.com' WHERE path='trans_email/ident_custom1/email'"
-$DBCALL "UPDATE core_config_data SET value='contact-magento-dev@trash-mail.com' WHERE path='trans_email/ident_custom2/email'"
+$DBCALL "INSERT INTO core_config_data (path, value) VALUES ('trans_email/ident_general/email', 'general-magento-dev@trash-mail.com') ON DUPLICATE KEY UPDATE value = 'general-magento-dev@trash-mail.com'"
+$DBCALL "INSERT INTO core_config_data (path, value) VALUES ('trans_email/ident_support/email', 'support-magento-dev@trash-mail.com') ON DUPLICATE KEY UPDATE value = 'support-magento-dev@trash-mail.com'"
+$DBCALL "INSERT INTO core_config_data (path, value) VALUES ('trans_email/ident_custom1/email', 'custom1-magento-dev@trash-mail.com') ON DUPLICATE KEY UPDATE value = 'custom1-magento-dev@trash-mail.com'"
+$DBCALL "INSERT INTO core_config_data (path, value) VALUES ('trans_email/ident_custom2/email', 'custom2-magento-dev@trash-mail.com') ON DUPLICATE KEY UPDATE value = 'custom2-magento-dev@trash-mail.com'"
 
 # set base urls
 if [[ -z "$RESET_BASE_URLS" ]]; then
@@ -311,15 +311,11 @@ if [[ "$RESET_BASE_URLS" == "y" || "$RESET_BASE_URLS" == "Y" || -z "$RESET_BASE_
       SCOPE=${SCOPES[$i]}
       SCOPE_ID=${SCOPE_IDS[$i]}
       BASE_URL=${BASE_URLS[$i]}
-      $DBCALL "UPDATE core_config_data SET value='$BASE_URL' WHERE path IN ('web/unsecure/base_url', 'web/secure/base_url') AND SCOPE_ID=$SCOPE_ID AND SCOPE='$SCOPE'"
-      $DBCALL "UPDATE core_config_data SET value='${BASE_URL}media/' WHERE path IN ('web/unsecure/base_media_url', 'web/secure/base_media_url') AND SCOPE_ID=$SCOPE_ID AND SCOPE='$SCOPE'"
-      COOKIE_DOMAIN=`echo $BASE_URL|sed -r 's/https?:\/\/([^:\/]*)[\/:].*/\1/g'`
-      $DBCALL "UPDATE core_config_data SET value='$COOKIE_DOMAIN' WHERE path = 'web/cookie/cookie_domain' AND SCOPE_ID=$SCOPE_ID AND SCOPE='$SCOPE'"
+      $DBCALL "INSERT INTO core_config_data (scope, scope_id, path, value) VALUES ($SCOPE_ID, $SCOPE, 'web/unsecure/base_url', '$BASE_URL') ON DUPLICATE KEY UPDATE value = '$BASE_URL'"
+      $DBCALL "INSERT INTO core_config_data (scope, scope_id, path, value) VALUES ($SCOPE_ID, $SCOPE, 'web/secure/base_url', '$BASE_URL') ON DUPLICATE KEY UPDATE value = '$BASE_URL'"
     done
   else
     SPECIFIC_BASE_URLS="n"
-    $DBCALL "UPDATE core_config_data SET value='{{base_url}}' WHERE path='web/unsecure/base_url'"
-    $DBCALL "UPDATE core_config_data SET value='{{base_url}}' WHERE path='web/secure/base_url'"
   fi
 else
   RESET_BASE_URLS="n"

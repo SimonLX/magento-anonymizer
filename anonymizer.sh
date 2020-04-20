@@ -295,7 +295,7 @@ if [[ "$RESET_BASE_URLS" == "y" || "$RESET_BASE_URLS" == "Y" || -z "$RESET_BASE_
           if [[ "$SCOPE" == "" ]]; then
             SCOPE="stores"
           fi
-          echo "Enter base url: "
+          echo "Enter base url (format: https://www.example.com/): "
           read BASE_URL
 
           SCOPES=("${SCOPES[@]}" $SCOPE)

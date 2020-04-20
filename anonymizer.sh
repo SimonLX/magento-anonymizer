@@ -64,7 +64,7 @@ else
     DBCALL="mysql -u$USER -p$PASS -h$HOST $NAME -e"
 fi
 
-echo "* Step 1: Anonymize Names and eMails"
+echo "* Step 1: Anonymize names and emails"
 
 if [[ -z "$RESET_ADMIN_PASSWORDS" ]]; then
   echo "  Do you want me to reset admin user passwords (Y/n)?"; read RESET_ADMIN_PASSWORDS
